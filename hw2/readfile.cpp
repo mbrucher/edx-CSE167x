@@ -91,7 +91,7 @@ void readfile(const char* filename)
                                     // Up to 10 params for cameras.  
                 bool validinput; // Validity of input 
 
-                // Process the light, add it to database.
+				// Process the light, add it to database.
                 // Lighting Command
                 if (cmd == "light") {
                     if (numused == numLights) { // No more Lights 
@@ -159,20 +159,20 @@ void readfile(const char* filename)
                 } else if (cmd == "camera") {
                     validinput = readvals(s,10,values); // 10 values eye cen up fov
                     if (validinput) {
-						eye.x = values[0];
-						eye.y = values[1];
-						eye.z = values[2];
+						eyeinit.x = values[0];
+						eyeinit.y = values[1];
+						eyeinit.z = values[2];
 
 						center.x = values[3];
 						center.y = values[4];
 						center.z = values[5];
 
-						up.x = values[6];
-						up.y = values[7];
-						up.z = values[8];
+						upinit.x = values[6];
+						upinit.y = values[7];
+						upinit.z = values[8];
 
 						fovy = values[9];
-						up = Transform::upvector(up, eye-center);
+						upinit = Transform::upvector(upinit, eyeinit-center);
 						
                         // YOUR CODE FOR HW 2 HERE
                         // Use all of values[0...9]
@@ -223,7 +223,7 @@ void readfile(const char* filename)
                 else if (cmd == "translate") {
                     validinput = readvals(s,3,values); 
                     if (validinput) {
-						transfstack.push(Transform::translate(values[0], values[1], values[2]));
+						rightmultiply(Transform::translate(values[0], values[1], values[2]), transfstack);
                         // YOUR CODE FOR HW 2 HERE.  
                         // Think about how the transformation stack is affected
                         // You might want to use helper functions on top of file. 
@@ -234,7 +234,7 @@ void readfile(const char* filename)
                 else if (cmd == "scale") {
                     validinput = readvals(s,3,values); 
                     if (validinput) {
-						transfstack.push(Transform::scale(values[0], values[1], values[2]));
+						rightmultiply(Transform::scale(values[0], values[1], values[2]), transfstack);
 
                         // YOUR CODE FOR HW 2 HERE.  
                         // Think about how the transformation stack is affected
@@ -248,10 +248,10 @@ void readfile(const char* filename)
                     if (validinput) {
 						auto rot = Transform::rotate(values[3], vec3(values[0], values[1], values[2]));
 
-						transfstack.push(mat4(rot[0][0], rot[0][1], rot[0][2], 0,
-							                  rot[1][0], rot[1][1], rot[1][2], 0,
-											  rot[2][0], rot[2][1], rot[2][2], 0,
-											  0, 0, 0, 1));
+						rightmultiply(mat4(rot[0][0], rot[1][0], rot[2][0], 0,
+							               rot[0][1], rot[1][1], rot[2][1], 0,
+										   rot[0][2], rot[1][2], rot[2][2], 0,
+										   0, 0, 0, 1), transfstack);
                         // YOUR CODE FOR HW 2 HERE. 
                         // values[0..2] are the axis, values[3] is the angle.  
                         // You may want to normalize the axis (or in Transform::rotate)

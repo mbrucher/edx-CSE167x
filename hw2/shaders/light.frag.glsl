@@ -40,13 +40,14 @@ vec4 ComputeLight (const in vec3 direction, const in vec4 lightcolor, const in v
 	vec4 phong = myspecular * lightcolor * pow (max(nDotH, 0.0), myshininess) ; 
 
 	vec4 retval = lambert + phong ; 
+
 	return retval ;            
 }       
 
 void main (void) 
 {       
     if (enablelighting) {       
-        vec4 finalcolor; 
+        vec4 finalcolor = ambient; 
 		const vec3 eyepos = vec3(0,0,0) ; 
 		vec4 _mypos = gl_ModelViewMatrix * myvertex ; 
 		vec3 mypos = _mypos.xyz / _mypos.w ; // Dehomogenize current location 
